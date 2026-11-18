@@ -1,0 +1,106 @@
+
+@startuml 02 - Purchase and Fulfillment
+
+!include ../theme/theme.puml
+
+hide circle
+hide empty members
+
+skinparam classBorderColor ACCENT_FULFILLMENT
+
+' Purchase
+class Purchase {
+    confirmedAt
+    deliveryAddressSnapshot
+    totalConfirmedAmount
+}
+
+class SellerOrder {
+    createdAt
+}
+
+class PurchaseItem {
+    quantity
+    acceptedUnitPrice
+    acceptedTerms
+    dispatchDeadline
+    calculationMethod
+    estimatedQuantity
+    estimatedAmount
+    acceptedPayableCap
+}
+
+' Fulfillment
+class FulfillmentEvent {
+    eventType
+    quantity
+    occurredAt
+    source
+}
+
+class WeightReconciliation {
+    finalMeasuredQuantity
+    finalAmount
+    estimatedAmount
+    acceptedPayableCap
+    difference
+    outcome
+    chargedAmount
+}
+
+' Shipment
+class Shipment {
+    status
+    plannedAt
+    handedOverAt
+    deliveredAt
+    trackingReference
+    handoverEvidenceReference
+}
+
+class ShipmentItem {
+    quantity
+    measuredQuantity
+}
+
+class ShipmentEvent {
+    eventType
+    source
+    occurredAt
+    supportingReference
+}
+
+' External integration
+interface ShippingProvider
+
+
+
+' ==========================================
+' Relationships
+' ==========================================
+
+' Purchase and seller orders
+Purchase "1" *-- "1..*" SellerOrder : divided into
+Seller "1" -- "0..*" SellerOrder : fulfils
+SellerOrder "1" *-- "1..*" PurchaseItem : groups
+PurchaseItem "0..*" -- "1" Offer : bought from
+
+' Fulfillment
+PurchaseItem "1" -- "0..*" FulfillmentEvent : records
+PurchaseItem "1" -- "0..*" WeightReconciliation : reconciled by
+
+' Shipment
+SellerOrder "1" -- "0..*" Shipment : ships via
+Shipment "1" *-- "1..*" ShipmentItem : contains
+ShipmentItem "0..*" -- "1" PurchaseItem : ships
+Shipment "1" *-- "0..*" ShipmentEvent : tracked by
+
+' Refund relationships (Refund is shown in View 3)
+FulfillmentEvent "0..1" -- "0..*" Refund : remedied by
+WeightReconciliation "0..1" -- "0..*" Refund : settled by
+
+' External integration
+Shipment ..> ShippingProvider : uses
+
+
+@enduml

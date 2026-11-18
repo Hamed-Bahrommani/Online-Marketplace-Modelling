@@ -1,0 +1,528 @@
+
+@startuml 05 - Complete Integrated Domain Model
+
+!include ../theme/theme.puml
+
+' ==========================================
+' Global appearance
+' ==========================================
+
+left to right direction
+hide circle
+hide empty members
+
+skinparam backgroundColor #111318
+skinparam defaultFontColor #E5E7EB
+skinparam defaultFontName "JetBrains Mono"
+skinparam shadowing false
+skinparam linetype ortho
+skinparam nodesep 35
+skinparam ranksep 55
+skinparam padding 8
+skinparam dpi 180
+
+skinparam packageStyle rectangle
+skinparam packageBackgroundColor #171B22
+skinparam packageBorderColor #596273
+skinparam packageFontColor #E5E7EB
+skinparam packageFontName "Manrope"
+skinparam packageFontSize 15
+
+skinparam class {
+    BackgroundColor #1B1F27
+    BorderColor #444C59
+    FontColor #E5E7EB
+    FontName "JetBrains Mono"
+    FontSize 11
+    AttributeFontColor #A5ABB5
+    AttributeFontName "JetBrains Mono"
+    AttributeFontSize 9
+}
+
+skinparam ArrowColor #788493
+skinparam ArrowFontColor #A5ABB5
+skinparam ArrowFontName "JetBrains Mono"
+skinparam ArrowFontSize 9
+
+skinparam interface {
+    BackgroundColor #202630
+    BorderColor #596273
+    FontColor #E5E7EB
+}
+
+' ==========================================
+' VIEW 1 — Accounts, Catalog, Cart,
+' Checkout and Payment
+' ==========================================
+
+package "01 · ACCOUNTS, CATALOG & CHECKOUT" #1B2633 {
+
+    abstract class User {
+        displayName
+        contactInfo
+        accountStatus
+        verificationStatus
+    }
+
+    class Customer
+
+    class Seller {
+        eligibilityStatus
+    }
+
+    class Administrator
+
+    class Address {
+        recipientName
+        addressLines
+        postalCode
+        contactPhone
+    }
+
+    class Category {
+        name
+    }
+
+    class Product {
+        name
+        description
+        specifications
+    }
+
+    class Offer {
+        unitPrice
+        availableQuantity
+        offerStatus
+        validUntil?
+        condition
+        measurementMethod
+        isVariableWeight
+        storageHandlingConditions
+        shippingRestrictions
+        warrantyTerms
+        returnTerms
+        dispatchCommitment
+    }
+
+    class Cart {
+        updatedAt
+    }
+
+    class CartItem {
+        quantity
+        addedAt
+    }
+
+    class CheckoutAttempt {
+        status
+        createdAt
+        totalPayable
+        deliveryAddressSnapshot
+        disclosedChanges
+    }
+
+    class CheckoutLine {
+        quantity
+        acceptedUnitPrice
+        acceptedTerms
+        calculationMethod
+        estimatedQuantity
+        estimatedAmount
+        acceptedPayableCap
+        acceptedAt
+    }
+
+    class PaymentAttempt {
+        componentType
+        amount
+        status
+        externalReference
+        initiatedAt
+        resolvedAt
+    }
+
+    class ReconciliationRecord {
+        outcomeType
+        amount
+        status
+        detectedAt
+    }
+
+    class Wallet {
+        availableBalance
+        heldBalance
+    }
+
+    class WalletTransaction {
+        transactionType
+        amount
+        createdAt
+        reason
+    }
+
+    interface PaymentGateway
+}
+
+' ==========================================
+' VIEW 2 — Purchase and Fulfillment
+' ==========================================
+
+package "02 · PURCHASE & FULFILLMENT" #1B2928 {
+
+    class Purchase {
+        confirmedAt
+        deliveryAddressSnapshot
+        totalConfirmedAmount
+    }
+
+    class SellerOrder {
+        createdAt
+    }
+
+    class PurchaseItem {
+        quantity
+        acceptedUnitPrice
+        acceptedTerms
+        dispatchDeadline
+        calculationMethod
+        estimatedQuantity
+        estimatedAmount
+        acceptedPayableCap
+    }
+
+    class FulfillmentEvent {
+        eventType
+        quantity
+        occurredAt
+        source
+    }
+
+    class WeightReconciliation {
+        finalMeasuredQuantity
+        finalAmount
+        estimatedAmount
+        acceptedPayableCap
+        difference
+        outcome
+        chargedAmount
+    }
+
+    class Shipment {
+        status
+        plannedAt
+        handedOverAt
+        deliveredAt
+        trackingReference
+        handoverEvidenceReference
+    }
+
+    class ShipmentItem {
+        quantity
+        measuredQuantity
+    }
+
+    class ShipmentEvent {
+        eventType
+        source
+        occurredAt
+        supportingReference
+    }
+
+    interface ShippingProvider
+}
+
+' ==========================================
+' VIEW 3 — After-Sales, Refunds and Feedback
+' ==========================================
+
+package "03 · AFTER-SALES & FEEDBACK" #30291F {
+
+    class AfterSalesRequest {
+        requestType
+        status
+        reason
+        submittedAt
+    }
+
+    class AfterSalesLine {
+        quantity
+    }
+
+    class ReturnShipment {
+        status
+        trackingReference
+        createdAt
+    }
+
+    class ReturnShipmentItem {
+        quantity
+    }
+
+    class Refund {
+        totalAmount
+        scope
+        status
+        originType
+        createdAt
+    }
+
+    class RefundLine {
+        quantity
+        amount
+    }
+
+    class RefundAllocation {
+        amount
+        destinationType
+        status
+    }
+
+    class Review {
+        createdAt
+    }
+
+    class FeedbackComponent {
+        componentType
+        rating
+        comment
+        submittedAt
+    }
+}
+
+' ==========================================
+' VIEW 4 — Cases, Administration and Support
+' ==========================================
+
+package "04 · CASES, ADMIN & INTEGRATIONS" #302633 {
+
+    class Case {
+        caseType
+        originType
+        description
+        status
+        openedAt
+        subject : SubjectReference
+    }
+
+    class Dispute {
+        claimantStatement
+        respondentStatement
+    }
+
+    class AutomatedFlag {
+        flagType
+        signalSummary
+        detectedAt
+        reviewStatus
+        subject : SubjectReference
+    }
+
+    class AdminDecision {
+        decisionType
+        result
+        reason
+        decidedAt
+    }
+
+    class Evidence {
+        evidenceType
+        sourceType
+        sourceReference
+        description
+        submittedAt
+    }
+
+    class AuditLogEntry {
+        actionType
+        target : SubjectReference
+        occurredAt
+        result
+        reason
+        summary
+    }
+
+    class ContentItem {
+        title
+        body
+        publicationStatus
+        scheduledAt
+        publishedAt
+    }
+
+    class Notification {
+        notificationType
+        channel
+        status
+        createdAt
+        sentAt
+        source : SubjectReference
+    }
+
+    class AccountingTransfer {
+        eventType
+        source : SubjectReference
+        eventKey
+        transferStatus
+        attemptedAt
+        failureReason
+    }
+
+    interface NotificationProvider
+    interface AccountingConnector
+}
+
+' ==========================================
+' ALL 74 REGISTERED RELATIONSHIPS
+' ==========================================
+
+' R01–R07: Accounts and catalog
+
+User <|-- Customer : R01
+User <|-- Seller : R02
+User <|-- Administrator : R03
+
+Customer "1" *-- "0..*" Address : R04 saves
+
+Seller "1" -- "0..*" Offer : R05 publishes
+Product "1" -- "0..*" Offer : R06 has
+Product "0..*" -- "1" Category : R07 primary category
+
+' R08–R15: Cart, checkout and payment
+
+Customer "1" *-- "1" Cart : R08 owns
+Cart "1" *-- "0..*" CartItem : R09 contains
+CartItem "0..*" -- "1" Offer : R10 refers to
+
+Customer "1" -- "0..*" CheckoutAttempt : R11 starts
+CheckoutAttempt "1" *-- "1..*" CheckoutLine : R12 contains
+CheckoutLine "0..*" -- "1" Offer : R13 based on
+
+CheckoutAttempt "0..1" -- "0..*" PaymentAttempt : R14 requires {xor}
+PaymentAttempt "1" -- "0..*" ReconciliationRecord : R15 may produce
+
+' R16–R24: Checkout-to-purchase and wallet
+
+CheckoutAttempt "1" -- "0..1" Purchase : R16 confirms into
+CheckoutLine "1" -- "0..1" PurchaseItem : R17 becomes
+ReconciliationRecord "0..1" -- "0..*" Refund : R18 may trigger refund
+
+Customer "1" *-- "0..1" Wallet : R19 has
+Wallet "1" *-- "0..*" WalletTransaction : R20 records
+WalletTransaction "0..*" -- "0..1" PaymentAttempt : R21 funds
+PaymentAttempt ..> PaymentGateway : R22 uses
+WeightReconciliation "0..1" -- "0..*" PaymentAttempt : R23 collects via {xor}
+Customer "1" -- "0..*" Purchase : R24 makes
+
+' R25–R37: Purchase and fulfillment
+
+Purchase "1" *-- "1..*" SellerOrder : R25 divided into
+Seller "1" -- "0..*" SellerOrder : R26 fulfils
+SellerOrder "1" *-- "1..*" PurchaseItem : R27 groups
+PurchaseItem "0..*" -- "1" Offer : R28 bought from
+
+PurchaseItem "1" -- "0..*" FulfillmentEvent : R29 records
+PurchaseItem "1" -- "0..*" WeightReconciliation : R30 reconciled by
+
+SellerOrder "1" -- "0..*" Shipment : R31 ships via
+Shipment "1" *-- "1..*" ShipmentItem : R32 contains
+ShipmentItem "0..*" -- "1" PurchaseItem : R33 ships
+Shipment "1" *-- "0..*" ShipmentEvent : R34 tracked by
+
+FulfillmentEvent "0..1" -- "0..*" Refund : R35 remedied by
+WeightReconciliation "0..1" -- "0..*" Refund : R36 settled by
+Shipment ..> ShippingProvider : R37 uses
+
+' R38–R52: After-sales and refunds
+
+Purchase "1" -- "0..*" AfterSalesRequest : R38 subject of
+AfterSalesRequest "1" *-- "1..*" AfterSalesLine : R39 affects
+AfterSalesLine "0..*" -- "1" PurchaseItem : R40 concerns
+
+AfterSalesRequest "1" -- "0..*" ReturnShipment : R41 may require
+ReturnShipment "1" *-- "1..*" ReturnShipmentItem : R42 contains
+ReturnShipmentItem "0..*" -- "1" AfterSalesLine : R43 returns
+
+Customer "1" -- "0..*" Refund : R44 receives
+Refund "0..*" -- "0..1" Purchase : R45 relates to
+AfterSalesRequest "0..1" -- "0..*" Refund : R46 leads to
+
+Refund "1" *-- "0..*" RefundLine : R47 itemised by
+RefundLine "0..*" -- "1" PurchaseItem : R48 concerns
+Refund "1" *-- "1..*" RefundAllocation : R49 allocated to
+
+RefundAllocation "0..*" -- "0..1" PaymentAttempt : R50 returns to original
+RefundAllocation "0..1" -- "0..1" WalletTransaction : R51 results in wallet
+RefundAllocation ..> PaymentGateway : R52 uses
+
+' R53–R56: Reviews and feedback
+
+Purchase "1" -- "0..1" Review : R53 reviewed in
+Review "1" *-- "0..*" FeedbackComponent : R54 contains
+FeedbackComponent "0..*" -- "0..1" PurchaseItem : R55 about product
+FeedbackComponent "0..*" -- "0..1" SellerOrder : R56 about seller
+
+' R57–R69: Cases, disputes and administration
+
+Case "0..*" -- "0..1" User : R57 reported by
+Case "0..1" -- "0..*" AutomatedFlag : R58 raised from
+Case <|-- Dispute : R59 is-a
+
+Dispute "0..*" -- "1" User : R60 claimant
+Dispute "0..*" -- "1" User : R61 respondent
+
+Administrator "1" -- "0..*" AdminDecision : R62 authorizes
+AdminDecision "0..*" -- "0..1" Case : R63 resolves
+AdminDecision "0..*" -- "1..*" Evidence : R64 based on
+Evidence "0..*" -- "0..1" Case : R65 attached to
+Evidence "0..*" -- "0..1" User : R66 submitted by
+
+AuditLogEntry "0..*" -- "1" User : R67 authorized by
+AuditLogEntry "1" -- "0..1" AdminDecision : R68 logs
+AuditLogEntry "0..*" -- "1..*" Evidence : R69 supported by
+
+' R70–R74: Supporting classes and integrations
+
+ContentItem "0..*" -- "1" User : R70 authored by
+AccountingTransfer "0..*" -- "1" Seller : R71 for
+AccountingTransfer ..> AccountingConnector : R72 uses
+
+Notification "0..*" -- "1" User : R73 addressed to
+Notification ..> NotificationProvider : R74 uses
+
+' ==========================================
+' MODEL CONSTRAINTS
+' ==========================================
+
+note as N1
+  C20 — XOR constraint
+
+  Each PaymentAttempt belongs to exactly one of:
+  - CheckoutAttempt
+  - WeightReconciliation
+
+  R14 and R23 must not both apply
+  to the same PaymentAttempt.
+end note
+
+note as N2
+  User generalization:
+  {overlapping, complete}
+
+  A User may hold multiple roles.
+  Every User has at least one
+  modeled role.
+end note
+
+note as N3
+  C19 — Seller consistency
+
+  The Seller associated with a
+  PurchaseItem's SellerOrder must
+  match the Seller of its Offer.
+end note
+
+N1 .. PaymentAttempt
+N2 .. User
+N3 .. SellerOrder
+
+@enduml

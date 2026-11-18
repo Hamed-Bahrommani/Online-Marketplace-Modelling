@@ -1,0 +1,132 @@
+
+@startuml 04 - Cases, Administration and Integrations
+
+!include ../theme/theme.puml
+
+hide circle
+hide empty members
+
+skinparam classBorderColor ACCENT_ADMIN
+
+' Cases and disputes
+class Case {
+    caseType
+    originType
+    description
+    status
+    openedAt
+    subject : SubjectReference
+}
+
+class Dispute {
+    claimantStatement
+    respondentStatement
+}
+
+class AutomatedFlag {
+    flagType
+    signalSummary
+    detectedAt
+    reviewStatus
+    subject : SubjectReference
+}
+
+' Administrative decisions and evidence
+class AdminDecision {
+    decisionType
+    result
+    reason
+    decidedAt
+}
+
+class Evidence {
+    evidenceType
+    sourceType
+    sourceReference
+    description
+    submittedAt
+}
+
+' Auditing
+class AuditLogEntry {
+    actionType
+    target : SubjectReference
+    occurredAt
+    result
+    reason
+    summary
+}
+
+' Supporting domain classes
+class ContentItem {
+    title
+    body
+    publicationStatus
+    scheduledAt
+    publishedAt
+}
+
+class Notification {
+    notificationType
+    channel
+    status
+    createdAt
+    sentAt
+    source : SubjectReference
+}
+
+class AccountingTransfer {
+    eventType
+    source : SubjectReference
+    eventKey
+    transferStatus
+    attemptedAt
+    failureReason
+}
+
+' Referenced classes from other views
+class User
+class Seller
+class Administrator
+
+' External integrations
+interface AccountingConnector
+interface NotificationProvider
+
+' ==========================================
+' Relationships
+' ==========================================
+
+' Case management
+Case "0..*" -- "0..1" User : reported by
+Case "0..1" -- "0..*" AutomatedFlag : raised from
+Case <|-- Dispute
+
+' Disputes
+Dispute "0..*" -- "1" User : claimant
+Dispute "0..*" -- "1" User : respondent
+
+' Administrative decisions
+Administrator "1" -- "0..*" AdminDecision : authorizes
+AdminDecision "0..*" -- "0..1" Case : resolves
+AdminDecision "0..*" -- "1..*" Evidence : based on
+Evidence "0..*" -- "0..1" Case : attached to
+Evidence "0..*" -- "0..1" User : submitted by
+
+' Audit trail
+AuditLogEntry "0..*" -- "1" User : authorized by
+AuditLogEntry "1" -- "0..1" AdminDecision : logs
+AuditLogEntry "0..*" -- "1..*" Evidence : supported by
+
+' Content management
+ContentItem "0..*" -- "1" User : authored by
+
+' Accounting integration
+AccountingTransfer "0..*" -- "1" Seller : for
+AccountingTransfer ..> AccountingConnector : uses
+
+' Notifications
+Notification "0..*" -- "1" User : addressed to
+Notification ..> NotificationProvider : uses
+
+@enduml

@@ -18,6 +18,11 @@ skinparam nodesep 45
 skinparam ranksep 55
 skinparam padding 8
 
+' Relationship routing
+skinparam linetype ortho
+skinparam ArrowThickness 1.1
+
+
 ' Class appearance
 skinparam class {
     BackgroundColor #1B1F27
@@ -44,6 +49,12 @@ skinparam note {
     FontColor #E5E7EB
     FontName "Estedad"
 }
+
+
+' Relationship appearance
+skinparam ArrowColor #8996A6
+skinparam ArrowFontColor #C0C7D1
+skinparam ArrowFontSize 10
 
 ' ==========================================
 ' View-specific accent colors

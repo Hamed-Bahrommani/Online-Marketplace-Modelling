@@ -1,0 +1,171 @@
+
+@startuml 01 - Accounts, Catalog, Cart, Checkout and Payment
+
+!include ../theme/theme.puml
+
+hide circle
+hide empty members
+
+skinparam classBorderColor ACCENT_ACCOUNTS
+
+' Accounts
+abstract class User {
+    displayName
+    contactInfo
+    accountStatus
+    verificationStatus
+}
+
+class Customer
+
+class Seller {
+    eligibilityStatus
+}
+
+class Administrator
+
+class Address {
+    recipientName
+    addressLines
+    postalCode
+    contactPhone
+}
+
+' Catalog
+class Category {
+    name
+}
+
+class Product {
+    name
+    description
+    specifications
+}
+
+class Offer {
+    unitPrice
+    availableQuantity
+    offerStatus
+    validUntil
+    condition
+    measurementMethod
+    isVariableWeight
+    storageHandlingConditions
+    shippingRestrictions
+    warrantyTerms
+    returnTerms
+    dispatchCommitment
+}
+
+' Cart and checkout
+class Cart {
+    updatedAt
+}
+
+class CartItem {
+    quantity
+    addedAt
+}
+
+class CheckoutAttempt {
+    status
+    createdAt
+    totalPayable
+    deliveryAddressSnapshot
+    disclosedChanges
+}
+
+class CheckoutLine {
+    quantity
+    acceptedUnitPrice
+    acceptedTerms
+    calculationMethod
+    estimatedQuantity
+    estimatedAmount
+    acceptedPayableCap
+    acceptedAt
+}
+
+' Payment and wallet
+class PaymentAttempt {
+    componentType
+    amount
+    status
+    externalReference
+    initiatedAt
+    resolvedAt
+}
+
+class ReconciliationRecord {
+    outcomeType
+    amount
+    status
+    detectedAt
+}
+
+class Wallet {
+    availableBalance
+    heldBalance
+}
+
+class WalletTransaction {
+    transactionType
+    amount
+    createdAt
+    reason
+}
+
+' External integration
+interface PaymentGateway
+
+' ==========================================
+' Relationships
+' ==========================================
+
+' Generalization
+User <|-- Customer
+User <|-- Seller
+User <|-- Administrator
+
+' Accounts and addresses
+Customer "1" *-- "0..*" Address : saves
+
+' Catalog
+Seller "1" -- "0..*" Offer : publishes
+Product "1" -- "0..*" Offer : has
+Product "0..*" -- "1" Category : primary category
+
+' Cart
+Customer "1" *-- "1" Cart : owns
+Cart "1" *-- "0..*" CartItem : contains
+CartItem "0..*" -- "1" Offer : refers to
+
+' Checkout
+Customer "1" -- "0..*" CheckoutAttempt : starts
+CheckoutAttempt "1" *-- "1..*" CheckoutLine : contains
+CheckoutLine "0..*" -- "1" Offer : based on
+
+' Payment and reconciliation
+CheckoutAttempt "0..1" -- "0..*" PaymentAttempt : requires {xor}
+PaymentAttempt "1" -- "0..*" ReconciliationRecord : may produce
+
+' Wallet
+Customer "1" *-- "0..1" Wallet : has
+Wallet "1" *-- "0..*" WalletTransaction : records
+WalletTransaction "0..*" -- "0..1" PaymentAttempt : funds
+
+' External integration
+PaymentAttempt ..> PaymentGateway : uses
+
+' Cross-view constraint
+note right of PaymentAttempt
+  C20:
+  Each PaymentAttempt belongs to
+  exactly one of CheckoutAttempt
+  or WeightReconciliation.
+
+  The WeightReconciliation
+  relationship is shown in View 2.
+end note
+
+@enduml

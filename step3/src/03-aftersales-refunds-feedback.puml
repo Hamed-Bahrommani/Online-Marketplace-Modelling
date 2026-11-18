@@ -1,0 +1,104 @@
+
+@startuml 03 - After-Sales, Refunds and Feedback
+
+!include ../theme/theme.puml
+
+hide circle
+hide empty members
+
+skinparam classBorderColor ACCENT_AFTERSALES
+
+' After-sales requests
+class AfterSalesRequest {
+    requestType
+    status
+    reason
+    submittedAt
+}
+
+class AfterSalesLine {
+    quantity
+}
+
+' Return shipments
+class ReturnShipment {
+    status
+    trackingReference
+    createdAt
+}
+
+class ReturnShipmentItem {
+    quantity
+}
+
+' Refunds
+class Refund {
+    totalAmount
+    scope
+    status
+    originType
+    createdAt
+}
+
+class RefundLine {
+    quantity
+    amount
+}
+
+class RefundAllocation {
+    amount
+    destinationType
+    status
+}
+
+' Feedback
+class Review {
+    createdAt
+}
+
+class FeedbackComponent {
+    componentType
+    rating
+    comment
+    submittedAt
+}
+
+' ==========================================
+' Relationships
+' ==========================================
+
+' After-sales requests
+Purchase "1" -- "0..*" AfterSalesRequest : subject of
+AfterSalesRequest "1" *-- "1..*" AfterSalesLine : affects
+AfterSalesLine "0..*" -- "1" PurchaseItem : concerns
+
+' Return shipments
+AfterSalesRequest "1" -- "0..*" ReturnShipment : may require
+ReturnShipment "1" *-- "1..*" ReturnShipmentItem : contains
+ReturnShipmentItem "0..*" -- "1" AfterSalesLine : returns
+
+' Refunds
+Customer "1" -- "0..*" Refund : receives
+Refund "0..*" -- "0..1" Purchase : relates to
+AfterSalesRequest "0..1" -- "0..*" Refund : leads to
+Refund "1" *-- "0..*" RefundLine : itemised by
+RefundLine "0..*" -- "1" PurchaseItem : concerns
+Refund "1" *-- "1..*" RefundAllocation : allocated to
+
+' Refund destinations
+RefundAllocation "0..*" -- "0..1" PaymentAttempt : returns to (original)
+RefundAllocation "0..1" -- "0..1" WalletTransaction : results in (wallet)
+RefundAllocation ..> PaymentGateway : uses
+
+' Refunds from fulfillment and reconciliation
+FulfillmentEvent "0..1" -- "0..*" Refund : remedied by
+WeightReconciliation "0..1" -- "0..*" Refund : settled by
+ReconciliationRecord "0..1" -- "0..*" Refund : may trigger
+
+' Feedback
+Purchase "1" -- "0..1" Review : reviewed in
+Review "1" *-- "0..*" FeedbackComponent : contains
+FeedbackComponent "0..*" -- "0..1" PurchaseItem : about product
+FeedbackComponent "0..*" -- "0..1" SellerOrder : about seller
+
+@enduml
