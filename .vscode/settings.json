@@ -1,0 +1,11 @@
+
+{
+    "plantuml.render": "Local",
+    "plantuml.diagramsRoot": "diagrams/step3/src",
+    "plantuml.exportOutDir": "diagrams/step3/exports",
+    "plantuml.exportFormat": "svg",
+    "plantuml.includepaths": [
+        "diagrams/step3/theme"
+    ],
+    "plantuml.previewAutoUpdate": true
+}

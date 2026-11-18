@@ -1,0 +1,55 @@
+' ==========================================
+' Software Design Concepts — Shared Theme
+' ==========================================
+
+' Base canvas and typography
+!theme plain
+
+skinparam backgroundColor #111318
+skinparam defaultFontName "JetBrains Mono"
+skinparam defaultFontColor #E5E7EB
+skinparam defaultFontSize 13
+
+' Diagram layout
+skinparam shadowing false
+skinparam roundcorner 7
+skinparam dpi 160
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam padding 8
+
+' Class appearance
+skinparam class {
+    BackgroundColor #1B1F27
+    BorderColor #444C59
+    FontColor #E5E7EB
+    FontName "JetBrains Mono"
+    FontSize 13
+    AttributeFontColor #A5ABB5
+    AttributeFontName "JetBrains Mono"
+    AttributeFontSize 11
+    StereotypeFontColor #A5ABB5
+}
+
+' Relationships
+skinparam ArrowColor #788493
+skinparam ArrowFontColor #A5ABB5
+skinparam ArrowFontName "JetBrains Mono"
+skinparam ArrowFontSize 10
+
+' Notes
+skinparam note {
+    BackgroundColor #1B1F27
+    BorderColor #444C59
+    FontColor #E5E7EB
+    FontName "Estedad"
+}
+
+' ==========================================
+' View-specific accent colors
+' ==========================================
+
+!define ACCENT_ACCOUNTS #7189A8
+!define ACCENT_FULFILLMENT #719D96
+!define ACCENT_AFTERSALES #B69A68
+!define ACCENT_ADMIN #A58AA6

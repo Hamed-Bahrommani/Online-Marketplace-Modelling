@@ -1,0 +1,23 @@
+
+@startuml Test Theme
+
+!include ../theme/theme.puml
+
+hide circle
+hide empty members
+
+skinparam classBorderColor ACCENT_ACCOUNTS
+
+class Customer {
+    customerId : UUID
+    email : String
+}
+
+class Purchase {
+    purchaseId : UUID
+    status : PurchaseStatus
+}
+
+Customer "1" --> "0..*" Purchase : places
+
+@enduml
