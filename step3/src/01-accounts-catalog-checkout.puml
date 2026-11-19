@@ -46,7 +46,7 @@ class Offer {
     unitPrice
     availableQuantity
     offerStatus
-    validUntil
+    validUntil?
     condition
     measurementMethod
     isVariableWeight
@@ -127,6 +127,13 @@ User <|-- Customer
 User <|-- Seller
 User <|-- Administrator
 
+note right of User
+  {overlapping, complete}
+  A User may hold multiple roles.
+  Every User has at least one
+  modeled role.
+end note
+
 ' Accounts and addresses
 Customer "1" *-- "0..*" Address : saves
 
@@ -165,7 +172,8 @@ note right of PaymentAttempt
   or WeightReconciliation.
 
   The WeightReconciliation
-  relationship is shown in View 2.
+  relationship is shown in the
+  integrated diagram (View 5).
 end note
 
 @enduml

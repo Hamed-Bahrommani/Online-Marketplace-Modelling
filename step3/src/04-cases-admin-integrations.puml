@@ -85,7 +85,7 @@ class AccountingTransfer {
 }
 
 ' Referenced classes from other views
-class User
+abstract class User
 class Seller
 class Administrator
 

@@ -102,5 +102,11 @@ WeightReconciliation "0..1" -- "0..*" Refund : settled by
 ' External integration
 Shipment ..> ShippingProvider : uses
 
+note right of SellerOrder
+  C19:
+  The Seller of a PurchaseItem's
+  SellerOrder must match the
+  Seller of its Offer.
+end note
 
 @enduml

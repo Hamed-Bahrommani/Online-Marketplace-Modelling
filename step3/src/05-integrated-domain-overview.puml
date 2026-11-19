@@ -450,8 +450,8 @@ Refund "1" *-- "0..*" RefundLine : R47 itemised by
 RefundLine "0..*" -- "1" PurchaseItem : R48 concerns
 Refund "1" *-- "1..*" RefundAllocation : R49 allocated to
 
-RefundAllocation "0..*" -- "0..1" PaymentAttempt : R50 returns to original
-RefundAllocation "0..1" -- "0..1" WalletTransaction : R51 results in wallet
+RefundAllocation "0..*" -- "0..1" PaymentAttempt : R50 returns to (original)
+RefundAllocation "0..1" -- "0..1" WalletTransaction : R51 results in (wallet)
 RefundAllocation ..> PaymentGateway : R52 uses
 
 ' R53–R56: Reviews and feedback
@@ -488,6 +488,13 @@ AccountingTransfer ..> AccountingConnector : R72 uses
 
 Notification "0..*" -- "1" User : R73 addressed to
 Notification ..> NotificationProvider : R74 uses
+
+' ==========================================
+' Layout hints (invisible links, no model meaning)
+' ==========================================
+Case -[hidden]right- User
+Purchase -[hidden]down- Customer
+Customer -[hidden]down- AfterSalesRequest
 
 ' ==========================================
 ' MODEL CONSTRAINTS

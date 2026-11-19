@@ -63,6 +63,9 @@ class FeedbackComponent {
     submittedAt
 }
 
+' External integration
+interface PaymentGateway
+
 ' ==========================================
 ' Relationships
 ' ==========================================
@@ -93,7 +96,7 @@ RefundAllocation ..> PaymentGateway : uses
 ' Refunds from fulfillment and reconciliation
 FulfillmentEvent "0..1" -- "0..*" Refund : remedied by
 WeightReconciliation "0..1" -- "0..*" Refund : settled by
-ReconciliationRecord "0..1" -- "0..*" Refund : may trigger
+ReconciliationRecord "0..1" -- "0..*" Refund : may trigger refund
 
 ' Feedback
 Purchase "1" -- "0..1" Review : reviewed in
